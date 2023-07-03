@@ -35,9 +35,7 @@ public class RobotContainer {
   private POVButton m_elevation_clock_button = new POVButton(m_Xbox, 0);
   private POVButton m_elevation_unclock_button = new POVButton(m_Xbox, 180);
 
-  /**************************************************************************************
-   * 
-   */
+  /***************************************************************************************/
   public RobotContainer() {
     configureButtonBindings();
 
@@ -48,7 +46,8 @@ public class RobotContainer {
         () -> m_Xbox.getLeftTriggerAxis(),
         () -> m_Xbox.getRightTriggerAxis()));
     m_shooter.setDefaultCommand(new ShooterCommand(m_shooter,
-        () -> m_Joystick.getRawAxis(3)));
+        () -> m_Joystick.getRawAxis(3),
+        () -> m_Joystick.getRawButtonPressed(Contorller.JoystickVersionButtin)));
 
     SmartDashboard.putNumber("Xbox_Axis_L2", m_Xbox.getRightTriggerAxis());
     SmartDashboard.putNumber("Joystick_Axis_Trigle", m_Joystick.getRawAxis(3));
