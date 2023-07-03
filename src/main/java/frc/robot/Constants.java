@@ -5,8 +5,8 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public final class Constants {
     public static final class Contorller {
-        public static final int joystickID = 0;
-        public static final int xboxID = 1;
+        public static final int joystickID = 1;
+        public static final int xboxID = 0;
         public static final int JoystickVersionButtin = 2;
 
     }

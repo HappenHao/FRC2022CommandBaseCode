@@ -27,8 +27,8 @@ public class ArcadeDriverCommand extends CommandBase {
     double realTimeSpeedL = m_SpeedLFounction.get();
     double realTimeSpeedR = m_SpeedRFounction.get();
 
-    // m_drive.ArcadeDrive(realTimeSpeedL,realTimeSpeedR);
-    m_drive.TankDrive(realTimeSpeedL,realTimeSpeedR);
+    m_drive.ArcadeDrive(realTimeSpeedL,realTimeSpeedR);
+    // m_drive.TankDrive(realTimeSpeedL,realTimeSpeedR);
     
     
   }
