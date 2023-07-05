@@ -64,12 +64,6 @@ public class ShooterSubsystem extends SubsystemBase {
   ShuffleboardTab ShooterTab = Shuffleboard.getTab("ShooterTab");
   public NetworkTableEntry shooterSpeed = ShooterTab.add("Shooter Speed",0).getEntry();
   public NetworkTableEntry Pi = ShooterTab.add("Pi",0).getEntry();
-  // test push  
-  
-
-
-
-  
 
   public ShooterSubsystem() {
     m_shooter_left_falcon.setNeutralMode(NeutralMode.Coast);
