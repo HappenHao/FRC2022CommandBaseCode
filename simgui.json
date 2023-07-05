@@ -6,20 +6,6 @@
           "open": true
         }
       }
-    },
-    "RoboRIO": {
-      "5V Rail": {
-        "open": true
-      },
-      "6V Rail": {
-        "open": true
-      },
-      "RoboRIO Input": {
-        "open": true
-      },
-      "window": {
-        "visible": true
-      }
     }
   },
   "NTProvider": {
@@ -52,6 +38,12 @@
     }
   },
   "NetworkTables": {
+    "Shuffleboard": {
+      "ShooterSubsystem": {
+        "open": true
+      },
+      "open": true
+    },
     "SmartDashboard": {
       "open": true
     }
