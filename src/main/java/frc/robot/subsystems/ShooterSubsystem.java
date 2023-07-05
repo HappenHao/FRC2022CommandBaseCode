@@ -61,8 +61,14 @@ public class ShooterSubsystem extends SubsystemBase {
   PIDController m_rotateVersionpid = new PIDController(PhotonVisionConstant.kGains_rotateVersion.kP,
       PhotonVisionConstant.kGains_rotateVersion.kI, PhotonVisionConstant.kGains_rotateVersion.kD);
 
-  ShuffleboardTab ShooterTab = Shuffleboard.getTab("ShooterSubsystem");
+  ShuffleboardTab ShooterTab = Shuffleboard.getTab("ShooterTab");
   public NetworkTableEntry shooterSpeed = ShooterTab.add("Shooter Speed",0).getEntry();
+  public NetworkTableEntry Pi = ShooterTab.add("Pi",0).getEntry();
+  // test push  
+  
+
+
+
   
 
   public ShooterSubsystem() {
@@ -112,7 +118,7 @@ public class ShooterSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("rotate_encoder", rotate.getPosition());
     SmartDashboard.putNumber("elevate_encoder", elevate.getPosition());
 
-    // shooterSpeed.setDouble(RawSensorUnittoRPM(m_shooter_left_falcon.getSelectedSensorVelocity()));
+    shooterSpeed.setDouble(RawSensorUnittoRPM(m_shooter_left_falcon.getSelectedSensorVelocity()));
 
     // m_shooter_left_falcon.getPIDConfigs(TalonFXPIDSetConfiguration, 0, 0);
     SmartDashboard.putNumber("Shooter Speed", RawSensorUnittoRPM(m_shooter_left_falcon.getSelectedSensorVelocity()));
@@ -210,6 +216,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
   /*******************************************************/
   public void setVelocity_RPM(double velocity) {
+    shooterSpeed.setDouble(RPMtoRawSensorUnit(velocity));
+    Pi.setDouble(3.2432);
     m_shooter_left_falcon.set(ControlMode.Velocity, RPMtoRawSensorUnit(velocity));
     // m_shooter_right_falcon.set(ControlMode.Velocity,RPMtoRawSensorUnit(-velocity));
   }

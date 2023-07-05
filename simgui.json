@@ -6,34 +6,27 @@
           "open": true
         }
       }
-    },
-    "RoboRIO": {
-      "3.3V Rail": {
-        "open": true
-      },
-      "5V Rail": {
-        "open": true
-      },
-      "6V Rail": {
-        "open": true
-      },
-      "RoboRIO Input": {
-        "open": true
-      },
-      "window": {
-        "visible": true
-      }
     }
   },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/LiveWindow/DashaboardSubsystem": "Subsystem",
       "/LiveWindow/Deliver": "Subsystem",
+      "/LiveWindow/DeliverSubsystem": "Subsystem",
       "/LiveWindow/Drive": "Subsystem",
+      "/LiveWindow/DriveSubsystem": "Subsystem",
       "/LiveWindow/Intake": "Subsystem",
+      "/LiveWindow/IntakeSubsystem": "Subsystem",
       "/LiveWindow/Pneumatic": "Subsystem",
+      "/LiveWindow/PneumaticSubsystem": "Subsystem",
       "/LiveWindow/Shooter": "Subsystem",
+      "/LiveWindow/ShooterSubsystem": "Subsystem",
       "/LiveWindow/Ungrouped/DifferentialDrive[1]": "DifferentialDrive",
+      "/LiveWindow/Ungrouped/DigitalInput[0]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[1]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[2]": "Digital Input",
+      "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler"
     },
     "windows": {
@@ -45,6 +38,12 @@
     }
   },
   "NetworkTables": {
+    "Shuffleboard": {
+      "ShooterSubsystem": {
+        "open": true
+      },
+      "open": true
+    },
     "SmartDashboard": {
       "open": true
     }
