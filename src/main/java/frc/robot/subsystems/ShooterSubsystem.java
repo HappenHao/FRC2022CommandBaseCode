@@ -5,18 +5,18 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
-import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxLimitSwitch;
-import com.revrobotics.CANDigitalInput.LimitSwitchPolarity;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -60,6 +60,10 @@ public class ShooterSubsystem extends SubsystemBase {
    ******************************************/
   PIDController m_rotateVersionpid = new PIDController(PhotonVisionConstant.kGains_rotateVersion.kP,
       PhotonVisionConstant.kGains_rotateVersion.kI, PhotonVisionConstant.kGains_rotateVersion.kD);
+
+  ShuffleboardTab ShooterTab = Shuffleboard.getTab("ShooterSubsystem");
+  public NetworkTableEntry shooterSpeed = ShooterTab.add("Shooter Speed",0).getEntry();
+  
 
   public ShooterSubsystem() {
     m_shooter_left_falcon.setNeutralMode(NeutralMode.Coast);
@@ -107,6 +111,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("rotate_encoder", rotate.getPosition());
     SmartDashboard.putNumber("elevate_encoder", elevate.getPosition());
+
+    // shooterSpeed.setDouble(RawSensorUnittoRPM(m_shooter_left_falcon.getSelectedSensorVelocity()));
 
     // m_shooter_left_falcon.getPIDConfigs(TalonFXPIDSetConfiguration, 0, 0);
     SmartDashboard.putNumber("Shooter Speed", RawSensorUnittoRPM(m_shooter_left_falcon.getSelectedSensorVelocity()));

@@ -12,9 +12,11 @@ public class DashaboardSubsystem extends SubsystemBase {
   PowerDistribution m_PDP = new PowerDistribution(0, ModuleType.kCTRE);
   //PowerDistribution examplePD = new PowerDistribution(1, ModuleType.kRev);
   
-  
+
   public DashaboardSubsystem() {
     // CameraServer.startAutomaticCapture();
+    // NewTab.add("Pi",3.14);
+    
   }
 
   @Override
@@ -38,7 +40,7 @@ public class DashaboardSubsystem extends SubsystemBase {
       m_PDP.getCurrent(14),
       m_PDP.getCurrent(15)
     };
-
+    // abc.setDouble(Voltage);
     SmartDashboard.putNumber("PDP Voltage", Voltage);
     SmartDashboard.putNumberArray("PDP Current",Current);
 
