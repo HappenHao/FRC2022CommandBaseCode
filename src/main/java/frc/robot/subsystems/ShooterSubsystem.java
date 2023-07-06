@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -27,9 +28,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.*;
 
 public class ShooterSubsystem extends SubsystemBase {
-  /****************************************
-   * MOTOR
-   ******************************************/
+  /***** MOTOR **************************/
   public WPI_TalonFX m_shooter_left_falcon = new WPI_TalonFX(ShooterConstant.left_shooter);
   public WPI_TalonFX m_shooter_right_falcon = new WPI_TalonFX(ShooterConstant.right_shooter);
 
@@ -37,61 +36,54 @@ public class ShooterSubsystem extends SubsystemBase {
   public CANSparkMax m_rotate = new CANSparkMax(ShooterConstant.rotate, MotorType.kBrushless);
   public CANSparkMax m_elevation = new CANSparkMax(ShooterConstant.elevation, MotorType.kBrushless);
 
-  /****************************************
-   * LIMIT SWITCH
-   ******************************************/
+  /** LIMIT SWITCH ***********************/
   DigitalInput switch_elevation = new DigitalInput(SensorConstant.pitch_digital);
   DigitalInput switch_rotation = new DigitalInput(SensorConstant.rotate_digital);
   DigitalInput switch_tunnel = new DigitalInput(SensorConstant.shootExit_digital);
 
-  /****************************************
-   * Encoder
-   ******************************************/
+  /*** Encoder ***************************/
   RelativeEncoder rotate = m_rotate.getEncoder();
   RelativeEncoder elevate = m_elevation.getEncoder();
 
-  /****************************************
-   * PHOTON VISION
-   ******************************************/
+  /*** PHOTON VISION ********************/
   PhotonCamera m_camera = new PhotonCamera(PhotonVisionConstant.Shooter_Cam);
 
-  /****************************************
-   * PID CONTROLLER
-   ******************************************/
+  /**** PID CONTROLLER **********************/
   PIDController m_rotateVersionpid = new PIDController(PhotonVisionConstant.kGains_rotateVersion.kP,
       PhotonVisionConstant.kGains_rotateVersion.kI, PhotonVisionConstant.kGains_rotateVersion.kD);
 
+  /**** SHUFFLEBOARD & NETWORKTABLE ***********/
   ShuffleboardTab ShooterTab = Shuffleboard.getTab("ShooterTab");
-  public NetworkTableEntry shooterSpeed = ShooterTab.add("Shooter Speed",0).getEntry();
-  public NetworkTableEntry Pi = ShooterTab.add("Pi",0).getEntry();
+  public NetworkTableEntry ShooterSpeed = ShooterTab.add("Shooter Speed", 0).withWidget(BuiltInWidgets.kGraph)
+      .getEntry();
+  public NetworkTableEntry TargetSpeed = ShooterTab.add("TargetSpeed", 0).getEntry();
+  public NetworkTableEntry RotateEncoder = ShooterTab.add("RotateEncoder", 0).getEntry();
+  public NetworkTableEntry ElevateEncoder = ShooterTab.add("ElevateEncoder", 0).getEntry();
 
+  /******************************************************************
+   * ShooterSubsystem
+   *******************************************************************/
   public ShooterSubsystem() {
+
+    m_shooter_left_falcon.configFactoryDefault();
+    m_shooter_right_falcon.configFactoryDefault();
+
     m_shooter_left_falcon.setNeutralMode(NeutralMode.Coast);
     m_shooter_right_falcon.setNeutralMode(NeutralMode.Coast);
+
     m_shooter_right_falcon.follow(m_shooter_left_falcon);
-    // m_shooter_right_falcon.setInverted(true);
     m_shooter_right_falcon.setInverted(InvertType.InvertMotorOutput);
 
     m_launch.setIdleMode(IdleMode.kBrake);
     m_rotate.setIdleMode(IdleMode.kBrake);
     m_elevation.setIdleMode(IdleMode.kBrake);
-    // m_elevation.getReverseLimitSwitch(SparkMaxLimitSwitch.);
     rotate.setPosition(ShooterConstant.rotate_init_angle);
     elevate.setPosition(ShooterConstant.elevation_init_angle);
 
-    /****************************** SHOOTER_PID ****************************/
-    // Factory reset
-    m_shooter_left_falcon.configFactoryDefault();
-    // m_shooter_right_falcon.configFactoryDefault();
-
-    // config neutral deadband to be the smallest possible
-    // Minimum0.1% - Maximum25%
+    /***** SHOOTER_PID ********************************************/
     m_shooter_left_falcon.configNeutralDeadband(0.001);
-
-    // config sensor used for primary PID [Velocity]
     m_shooter_left_falcon.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,
         ShooterConstant.kPIDLoopIdx, ShooterConstant.kTimeoutMs);
-
     m_shooter_left_falcon.config_kF(ShooterConstant.kPIDLoopIdx, ShooterConstant.kGains_Velocit.kF,
         ShooterConstant.kTimeoutMs);
     m_shooter_left_falcon.config_kP(ShooterConstant.kPIDLoopIdx, ShooterConstant.kGains_Velocit.kP,
@@ -102,45 +94,48 @@ public class ShooterSubsystem extends SubsystemBase {
         ShooterConstant.kTimeoutMs);
   }
 
+  /******************************************************************
+   * periodic
+   *******************************************************************/
   @Override
   public void periodic() {
+
+    ShooterSpeed.setDouble(RawSensorUnittoRPM(m_shooter_left_falcon.getSelectedSensorVelocity()));
+    ElevateEncoder.setDouble(elevate.getPosition());
+    RotateEncoder.setDouble(rotate.getPosition());
 
     SmartDashboard.putBoolean("elevation_Limit", switch_elevation.get());
     SmartDashboard.putBoolean("Rotation_Limit", switch_rotation.get());
     SmartDashboard.putBoolean("Lounch_Switch", switch_tunnel.get());
 
-    SmartDashboard.putNumber("rotate_encoder", rotate.getPosition());
-    SmartDashboard.putNumber("elevate_encoder", elevate.getPosition());
-
-    shooterSpeed.setDouble(RawSensorUnittoRPM(m_shooter_left_falcon.getSelectedSensorVelocity()));
+    // SmartDashboard.putNumber("rotate_encoder", rotate.getPosition());
+    // SmartDashboard.putNumber("elevate_encoder", elevate.getPosition());
 
     // m_shooter_left_falcon.getPIDConfigs(TalonFXPIDSetConfiguration, 0, 0);
-    SmartDashboard.putNumber("Shooter Speed", RawSensorUnittoRPM(m_shooter_left_falcon.getSelectedSensorVelocity()));
+    // SmartDashboard.putNumber("Shooter Speed",
+    // RawSensorUnittoRPM(m_shooter_left_falcon.getSelectedSensorVelocity()));
     resteEncoder();
-    if (rotate.getPosition() > ShooterConstant.rotate_left_limit | rotate.getPosition() < ShooterConstant.rotate_right_limit) {
-     m_rotate.stopMotor();
-    }
-    if(elevate.getPosition() > ShooterConstant.elevation_limit | elevate.getPosition() <0)
-    {
-      m_elevation.stopMotor();
-    }
   }
 
+  /******************************************************************
+   * PHOTONVISION & SHOOTER ROTATE
+   *******************************************************************/
   public void rotateVersion() {
-    
+
     var result = m_camera.getLatestResult();
     if (result.hasTargets()) {
       PhotonTrackedTarget target = result.getBestTarget();
-      
+
       SmartDashboard.putNumber("TargetYaw", target.getYaw());
       SmartDashboard.putNumber("TargetPitch", target.getPitch());
 
-      m_rotate.set( -m_rotateVersionpid.calculate(target.getYaw(), 0));
-      
+      m_rotate.set(-m_rotateVersionpid.calculate(target.getYaw(), 0));
     }
   }
 
-  /*******************************************************/
+  /******************************************************************
+   * RESTE
+   *******************************************************************/
   private void resteEncoder() {
     if (!switch_rotation.get()) {
       rotate.setPosition(0);
@@ -148,22 +143,31 @@ public class ShooterSubsystem extends SubsystemBase {
     if (switch_elevation.get()) {
       elevate.setPosition(0);
     }
+    if (rotate.getPosition() > ShooterConstant.rotate_left_limit
+        | rotate.getPosition() < ShooterConstant.rotate_right_limit) {
+      m_rotate.stopMotor();
+    }
+    if (elevate.getPosition() > ShooterConstant.elevation_limit | elevate.getPosition() < 0) {
+      m_elevation.stopMotor();
+    }
   }
 
-  /*******************************************************/
+  /******************************************************************
+   * ROTATE
+   *******************************************************************/
   public void rotate_clock() {
     // if (rotate.getPosition() < ShooterConstant.rotate_left_limit) {
-      m_rotate.set(0.3);
+    m_rotate.set(0.3);
     // } else {
-    //   m_rotate.stopMotor();
+    // m_rotate.stopMotor();
     // }
   }
 
   public void rotate_unclock() {
     // if (rotate.getPosition() > ShooterConstant.rotate_right_limit) {
-      m_rotate.set(-0.3);
+    m_rotate.set(-0.3);
     // } else {
-    //   m_rotate.stopMotor();
+    // m_rotate.stopMotor();
     // }
   }
 
@@ -171,21 +175,22 @@ public class ShooterSubsystem extends SubsystemBase {
     m_rotate.stopMotor();
   }
 
-  /*******************************************************/
-
+  /******************************************************************
+   * ELEVATION
+   *******************************************************************/
   public void elevation_clock() {
     // if (elevate.getPosition() <= ShooterConstant.elevation_limit) {
-      m_elevation.set(0.2);
+    m_elevation.set(0.2);
     // } else {
-    //   m_elevation.stopMotor();
+    // m_elevation.stopMotor();
     // }
   }
 
   public void elevation_unclock() {
     // if (elevate.getPosition() > 0) {
-      m_elevation.set(-0.2);
+    m_elevation.set(-0.2);
     // } else {
-    //   m_elevation.stopMotor();
+    // m_elevation.stopMotor();
     // }
   }
 
@@ -193,7 +198,9 @@ public class ShooterSubsystem extends SubsystemBase {
     m_elevation.stopMotor();
   }
 
-  /*******************************************************/
+  /******************************************************************
+   * LAUNCH
+   *******************************************************************/
   public void launch() {
     m_launch.set(-1);
   }
@@ -202,28 +209,30 @@ public class ShooterSubsystem extends SubsystemBase {
     m_launch.stopMotor();
   }
 
-  /*******************************************************/
+  /******************************************************************
+   * FLYWHEEL
+   ********************************************************************/
   public void setPower(double power) {
     m_shooter_left_falcon.set(ControlMode.PercentOutput, power);
     // m_shooter_right_falcon.set(ControlMode.PercentOutput, -power);
   }
 
-  /*******************************************************/
   public void setVelocity_RPM(double velocity) {
-    shooterSpeed.setDouble(RPMtoRawSensorUnit(velocity));
-    Pi.setDouble(3.2432);
+    TargetSpeed.setDouble(RPMtoRawSensorUnit(velocity));
     m_shooter_left_falcon.set(ControlMode.Velocity, RPMtoRawSensorUnit(velocity));
+
     // m_shooter_right_falcon.set(ControlMode.Velocity,RPMtoRawSensorUnit(-velocity));
   }
 
-  /*******************************************************/
   public void stopShoot() {
     //
     m_shooter_left_falcon.stopMotor();//
     // m_shooter_right_falcon.stopMotor();
   }
 
-  /************** RPM(rotate per Second) - UPS(unit per 100 ms) *********************/
+  /***************************************************
+   * RPM(rotate per Second) - UPS(unit per 100 ms)
+   ******************************************************/
   public double RPMtoRawSensorUnit(double velocity) {
     return velocity * 2048 / 600;
   }
